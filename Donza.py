@@ -9,12 +9,11 @@ from telegram.ext import (
     filters,
 )
 
-# Загружаем .env
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))  # если нужен, оставляем
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
 
-# Клавиатура
+
 def main_keyboard():
     kb = [
         [KeyboardButton(
@@ -25,7 +24,7 @@ def main_keyboard():
     ]
     return ReplyKeyboardMarkup(kb, resize_keyboard=True)
 
-# /start
+
 async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     await update.message.reply_text(
         "Добро пожаловать 🔥\n\n"
@@ -34,21 +33,21 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
         reply_markup=main_keyboard()
     )
 
-# Обработка кнопки «Поддержка»
+
 async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
     if update.message.text == "📞 Поддержка":
         await update.message.reply_text("Напиши нашему саппорту: @Dimon_sopr")
 
-def main():
-    # Создаем приложение
-    application = ApplicationBuilder().token(BOT_TOKEN).build()
 
-    # Хэндлеры
-    application.add_handler(CommandHandler("start", start))
-    application.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, support))
+def main():
+    app = ApplicationBuilder().token(BOT_TOKEN).build()
+
+    app.add_handler(CommandHandler("start", start))
+    app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, support))
 
     print("✅ Бот запущен…")
-    application.run_polling()
+    app.run_polling()
+
 
 if __name__ == "__main__":
     main()
