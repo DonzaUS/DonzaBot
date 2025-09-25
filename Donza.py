@@ -2,30 +2,35 @@ import os
 from dotenv import load_dotenv
 from telegram import KeyboardButton, ReplyKeyboardMarkup, WebAppInfo, Update
 from telegram.ext import (
-    ApplicationBuilder,
+    Application,
     CommandHandler,
     MessageHandler,
     ContextTypes,
     filters,
 )
 
+# Загружаем токен из .env
 load_dotenv()
 BOT_TOKEN = os.getenv("BOT_TOKEN")
-ADMIN_ID = int(os.getenv("ADMIN_ID", "0"))
+ADMIN_ID = int(os.getenv("ADMIN_ID", "0") or 0)
 
 
-def main_keyboard():
+def main_keyboard() -> ReplyKeyboardMarkup:
+    """Клавиатура с кнопками для покупки и поддержки"""
     kb = [
-        [KeyboardButton(
-            text="💎 Купить UC",
-            web_app=WebAppInfo(url="https://donza-uc.vercel.app")
-        )],
+        [
+            KeyboardButton(
+                text="💎 Купить UC",
+                web_app=WebAppInfo(url="https://donza-uc.vercel.app")
+            )
+        ],
         [KeyboardButton(text="📞 Поддержка")]
     ]
     return ReplyKeyboardMarkup(kb, resize_keyboard=True)
 
 
-async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def start(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Команда /start"""
     await update.message.reply_text(
         "Добро пожаловать 🔥\n\n"
         "Самые лучшие UC по выгодным ценам только в Donza!\n\n"
@@ -34,13 +39,16 @@ async def start(update: Update, context: ContextTypes.DEFAULT_TYPE):
     )
 
 
-async def support(update: Update, context: ContextTypes.DEFAULT_TYPE):
+async def support(update: Update, context: ContextTypes.DEFAULT_TYPE) -> None:
+    """Обработчик кнопки поддержки"""
     if update.message.text == "📞 Поддержка":
         await update.message.reply_text("Напиши нашему саппорту: @Dimon_sopr")
 
 
-def main():
-    app = ApplicationBuilder().token(BOT_TOKEN).build()
+def main() -> None:
+    """Запуск бота"""
+    app = Application.builder().token(BOT_TOKEN).build()
+
     app.add_handler(CommandHandler("start", start))
     app.add_handler(MessageHandler(filters.TEXT & ~filters.COMMAND, support))
 
